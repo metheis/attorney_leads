@@ -1,0 +1,16 @@
+# This file is used to install the required packages for the project.
+# Use the following command to install the packages:
+# pip install -r requirements.txt
+# You can also use the following command to install the packages in a virtual environment:
+# python -m venv venv
+# source venv/bin/activate (Linux/Mac)
+# venv\Scripts\activate (Windows)
+# pip install -r requirements.txt
+fastapi[standard]
+uvicorn[standard]
+pydantic
+sqlmodel
+python-multipart
+fastapi-mail
+pyjwt
+email-validator
