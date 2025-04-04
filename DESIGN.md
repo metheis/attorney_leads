@@ -35,3 +35,5 @@ Current assumptions about desired behavior are as follows:
 
 These considerations can be changed based on desired functionality for users and attorneys.
 
+One more piece to add, implementation wise, there are methods to clean up the actual code implementation. The largest is that currently, all functions are global in their respective files, and the main file and directly imports each dependency / data type it needs. In a full fleshed implementation, I would prefer to stick these into respective classes, which simplifies the global namespace.
+

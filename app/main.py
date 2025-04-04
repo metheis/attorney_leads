@@ -37,6 +37,11 @@ async def default():
 
 @app.post("/candidate/")
 async def create_candidate(candidate: Candidate):
+    """
+    Create a new candidate and send a confirmation email.
+    The candidate's email address is validated before sending the email.
+    If the candidate already exists, the existing candidate is returned.
+    """
     if not val_address(candidate.email):
         raise HTTPException(status_code=400, detail="Invalid email address")
     db_candidate = create_db_candidate(candidate)
@@ -52,6 +57,9 @@ async def create_candidate(candidate: Candidate):
 
 @app.get("/candidate/{email}")
 def read_candidate(email: str):
+    """
+    Retrieve a candidate by their email address.
+    """
     candidate = read_db_candidate(email)
     if candidate:
         return candidate
@@ -62,10 +70,17 @@ def read_candidate(email: str):
 def update_candidate(
     email: str, candidate: CandidateUpdate
 ):
+    """
+    Update a candidate's information by their email address.
+    """
     return update_db_candidate(email, candidate)
 
 @app.post("/uploadfile/")
 async def create_upload_file(file: UploadFile):
+    """
+    Upload a file and save it to the server.
+    The file is saved in the "resumes" directory with its original filename.
+    """
     contents = await file.read()
     with open(f"resumes/{file.filename}", "wb") as f:
         f.write(contents)
@@ -74,17 +89,24 @@ async def create_upload_file(file: UploadFile):
 """Template Authentication Helpers"""
 
 def fake_hash_password(password: str):
+    # This doesn't provide any security at all
+    # Don't use this in production!
     return "fakehashed" + password
 
 def get_auth_user(username: str):
+    # This doesn't provide any security at all
+    # Don't use this in production!
     return auth_db_attorney(username)
 
 def fake_decode_token(token):
     # This doesn't provide any security at all
+    # Don't use this in production!
     user = get_auth_user(token)
     return user
 
 async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+    # Simulate a user authentication process.
+    # In a real application, you would verify the token and get the user from the database.
     user = fake_decode_token(token)
     if not user:
         raise HTTPException(
@@ -98,6 +120,11 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
 
 @app.post("/attorney/create")
 async def create_attorney(current_user: Annotated[AttorneyBase, Depends(get_current_user)], attorney: AttorneyCreate):
+    """
+    Create a new attorney user with hashed password.
+    The attorney's email address is validated before creating the user.
+    Another attorney's auth token is used to authenticate the request.
+    """
     if not val_address(attorney.email):
         raise HTTPException(status_code=400, detail="Invalid email address")
     hashed_password = fake_hash_password(attorney.password)
@@ -106,6 +133,10 @@ async def create_attorney(current_user: Annotated[AttorneyBase, Depends(get_curr
 
 @app.post("/token")
 async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
+    """"
+    Authentication for attorney users.
+    The attorney's username and password are validated against the database.
+    """
     # Simulate authentication.
     db_attorney = auth_db_attorney(form_data.username)
     if (db_attorney):
@@ -118,6 +149,10 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
 async def load_attorney_leads(
     current_user: Annotated[AttorneyBase, Depends(get_current_user)],
 ):
+    """
+    Retrieve all candidates for the authenticated attorney user.
+    The attorney's auth token is used to authenticate the request.
+    """
     if current_user:
         return get_all_candidates()
     
@@ -126,5 +161,9 @@ def update_candidate_attorney(
     current_user: Annotated[AttorneyBase, Depends(get_current_user)],
     email: str, candidate: CandidateUpdateAttorney
 ):
+    """
+    Update a candidate's information (specifically their status) by their email address.
+    The attorney's auth token is used to authenticate the request.
+    """
     return update_db_candidate(email, candidate)
 

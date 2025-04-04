@@ -11,14 +11,16 @@ sqlite_url = f"sqlite:///{sqlite_file_name}"
 connect_args = {"check_same_thread": False}
 engine = create_engine(sqlite_url, connect_args=connect_args)
 
-def get_session():
-    with Session(engine) as session:
-        yield session
-
 def create_db_and_tables():
+    """
+    Create the database and tables.
+    """
     SQLModel.metadata.create_all(engine)
 
 def create_db_candidate(candidate: Candidate):
+    """
+    Create a new candidate in the database.
+    """
     with Session(engine) as session:
         existing_candidate = session.get(Candidate, candidate.email)
         if existing_candidate:
@@ -29,6 +31,9 @@ def create_db_candidate(candidate: Candidate):
         return candidate
     
 def read_db_candidate(email: str):
+    """
+    Read a candidate from the database by email.
+    """
     with Session(engine) as session:
         db_candidate = session.get(Candidate, email)
         if not db_candidate:
@@ -36,6 +41,9 @@ def read_db_candidate(email: str):
         return db_candidate
     
 def update_db_candidate(email: str, update_candidate: CandidateUpdate):
+    """
+    Update a candidate's information in the database by email.
+    """
     with Session(engine) as session:
         db_candidate = session.get(Candidate, email)
         if not db_candidate:
@@ -49,12 +57,18 @@ def update_db_candidate(email: str, update_candidate: CandidateUpdate):
         return db_candidate
     
 def get_all_candidates():
+    """
+    Get all candidates from the database.
+    """
     with Session(engine) as session:
         statement = select(Candidate)
         results = session.exec(statement).all()
         return results
     
 def create_db_attorney(attorney: Attorney):
+    """
+    Create a new attorney in the database.
+    """
     with Session(engine) as session:
         existing_attorney = session.get(Attorney, attorney.username)
         if existing_attorney:
@@ -65,6 +79,9 @@ def create_db_attorney(attorney: Attorney):
         return attorney
     
 def auth_db_attorney(username: str):
+    """
+    Authenticate an attorney by username. Return the attorney object if found.
+    """
     with Session(engine) as session:
         db_attorney = session.get(Attorney, username)
         if not db_attorney:
