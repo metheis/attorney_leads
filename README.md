@@ -4,6 +4,25 @@ This repo contains a simple backend application that manages leads for an attorn
 
 ## Running the application.
 
+First, from inside this folder, create a python virtual environment:
+```
+python -m venv venv
+```
+
+Activate the environment (macos / linux)
+```
+source env/bin/activate
+```
+(Windows)
+```
+.\env\Scripts\Activate.ps1
+```
+
+Install python required dependencies:
+```
+pip install -r requirements.txt
+```
+
 Enter the app directory
 ```
 cd app
@@ -18,6 +37,8 @@ Navigate to the api docs in your browser at:
 ```
 http://127.0.0.1:8000/docs
 ```
+
+After starting up, you will notice that the application will create a database to store data offline if not already present on the file system.
 
 From there, you can see each of the APIs to interact with the backend.
 * `/candidate/`: Create candidate.
